@@ -1,0 +1,35 @@
+from math import *
+print(" если ввести z = 0, то вы выйдите из программы,как розбiйник ")
+print("")
+while True:
+    try:
+        x = float(input("введите первое число "))
+        z = input("введите действие ")
+        if z == 'stop':
+            print("завершение рабооты")
+            break
+        elif z == '+':
+            y = float(input("введите второе число "))
+            print('{} + {} = ' .format(x,y), x + y)
+        elif z == '-':
+            y = float(input("введите второе число "))
+            print('{} + {} =' .format(x,y), x - y)
+        elif z == 'sqrt':
+          print("квадрат даннго числа =", sqrt(x))
+        elif z == '*':
+            y = float(input("введите второе число "))
+            print('{} * {} =' .format(x,y), x * y)
+        elif z == '/':
+            y = float(input("введите второе число "))
+            print('{} / {} =' .format(x,y), x / y)
+        elif z == 'log':
+            print("логорифм(10) первого числа = ", log10(x))
+        elif z == 'f':
+            print("факториал данного числа = ",factorial(x))
+        else:
+            print("вы ввели не правильное действие")
+    except ZeroDivisionError:
+        print("нельзя делить на ноль!!!")
+    except ValueError:
+        print("нельзя делить на ноль!!!")
+        continue
