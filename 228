@@ -1,0 +1,52 @@
+import pyowm
+
+owm = pyowm.OWM('550e03c3be32d4611f25534d39a36284', language="ru")
+print("в каком городе вы бы хотели узнать погоду?(в пределах России вводите на руском,\n если другая страна то вводите на английском)\n")
+
+try:
+    place = input("ведите ваш город ")
+    observation = owm.weather_at_place(place)
+    w = observation.get_weather()
+
+    temp = int(w.get_temperature('celsius')['temp'])
+    temp1 = int(w.get_temperature('celsius')['temp_min'])
+    temp2 = int(w.get_temperature('celsius')['temp_max'])
+
+    print("в городке " + place + " сейчас - " + w.get_detailed_status())
+    if w.get_detailed_status() == 'дождь' or 'легкий дождь':
+        print("не забудь взять зонтик :3 \n")
+    else:
+        print("дождя нету и это радует\n")
+
+    print("средняя температура в городе " + place + " около " + str(temp) + " градусов.")
+    print("в течении дня она будет находиться в пределах от " + str(temp1) + " до " + str(temp2))
+    if temp >= 20:
+        print(" в атаку,за Гилнес\n")
+    elif 15 <= temp < 20:\
+        print(" **ЗЛОБНОЕ РЫЧАНИЕ МУРЛОКА\n")
+    elif 10 <= temp < 15:
+        print("погодка не шепчит,но жить можно...\n")
+    elif 4 <= temp < 10:
+        print(" зима близко!\n")
+    elif 0 <= temp < 4:
+        print(" не ну это полный МОЗАМБИК!!!\n")
+    else:
+        print(" я ледяное сердце плети\n")
+
+    v = w.get_wind()['speed']
+    print("скорость ветра в городе " + str(place) + "-" + str(v) + " м/c.")
+    def sss(v):
+        if v <= 5:
+            print("считай ветра нету\n")
+        elif 5 < v <= 8:
+            print("ветрааааа повенуйтесь моей воле!!!\n")
+        elif 8 < v <= 10:
+            print("сильный ветер который может вырвать у тебя деньги из рук))\n")
+        else:
+            print("не лезь блять дебил,оно тебя сожрет\n")
+    sss(v)
+    print("на этом все\n")
+    input("введите что-нибудь для выхода.")
+except:
+    print("вы ввели текст не корректно или же вы ввели несуществующий город!")
+    input("введите что-нибудь для выхода.")
