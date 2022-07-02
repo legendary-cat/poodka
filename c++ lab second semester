@@ -1,0 +1,321 @@
+/8 вариант В  матрице С[4 x 4] найти  среднее  арифметическое  по  каждому  столбцу, определить  номер  столбца,
+//в  котором  находится  минимальное  из  них,  и  вычесть  его элементы из элементов строки с таким же, как столбец, номером.
+#include "stdafx.h"
+#include <iostream>
+#include <fstream>
+#include <string>
+#include <iomanip>
+#include <iostream>
+#include <algorithm>
+#include <sstream>
+ 
+using namespace std;
+ 
+typedef int elemType;
+ 
+enum Er {
+    Fail_allocate_memore,
+    NOrectangle,
+    isn_open,
+    Stop,
+    OK,
+    WrongElem,
+    NOsquare
+};
+//printf_s
+Er Working_With_File(ifstream& file, string &path, int& m, int& n, int& t, elemType** &matr){
+    while (true) {
+        printf_s("введите название файла или * для завершения: ");
+        getline(cin >> ws, path);
+        
+        if (path == "*") {
+            return Stop;
+        }
+ 
+        file.open(path);
+ 
+        if (!file.is_open()) {
+            return isn_open;           
+        }
+        break;
+    }
+ 
+    bool b = true;
+    string s;
+    elemType d;
+    int k = 0;
+    char c = 0;
+ 
+    while (b) {
+        t = file.tellg();
+        file >> d;
+        char s;
+        c = 0;
+ 
+        if (file.fail() || (s = file.peek(), s != EOF && s != '\n' && s != '\t' && s != ' ')) {
+            return WrongElem;
+        }
+ 
+        n++;
+        while (c != EOF) {
+ 
+            c = file.get();
+            switch (c) {
+            case ' ': case '\t':
+                break;
+ 
+            case EOF:
+                b = false;
+ 
+            case '\n':
+                if (n != 0) {
+                    if (m == 0) {
+                        k = n;
+                    }
+                    if (k != n) {
+                        return NOrectangle;
+                        b = false;
+                        break;
+                    }
+                    m++;
+                    n = 0;
+                }
+                break;
+ 
+            default:
+                file.unget();
+                c = EOF;
+            }
+ 
+        }
+    }
+    n = k;
+    //cout << "m равно: " << m << endl << "n равно: " << n << endl << endl;
+ 
+    if (n != m) {
+        return NOsquare;
+    }
+ 
+    matr = new(nothrow) elemType * [m];
+    if (matr) {
+ 
+        for (int i = 0; i < m; i++) {
+ 
+            matr[i] = new (nothrow) elemType[n];
+ 
+            if (!matr[i]) {
+ 
+                for (int k = 0; k < i; k++)
+ 
+                    delete[] matr[k];
+ 
+                delete[] matr;
+ 
+                matr = NULL;
+                break;
+ 
+            }
+ 
+        }
+    }
+    if (!matr) {
+        return Fail_allocate_memore;
+    }
+ 
+}
+ 
+ 
+void matrix_input(ifstream& file, elemType** &matr,int& m,int& n) {
+ 
+    file.clear();
+    file.seekg(0);
+ 
+    for (int i = 0; i < m; i++) {
+        for (int j = 0; j < n; j++) {
+            file >> matr[i][j];
+        }
+    }
+}
+ 
+void matrix_show(elemType** &matr,int& m,int& n,int &SETW) {
+    for (int i = 0; i < m; i++)
+    {
+        for (int j = 0; j < n; j++)
+        {
+            cout << matr[i][j] << setw(SETW);
+        }
+        cout << "\n";
+    }
+    cout << endl;
+}
+ 
+void processing(elemType** &matr, int& m, int& n) {
+    double megamin = 9223372036854775807;
+    double srA;
+    double sum;
+    int min;
+ 
+    for (int i = 0; i < m; i++) {
+        sum = 0;
+        for (int j = 0; j < n; j++) {
+            sum += matr[j][i];
+        }
+ 
+        srA = sum / n;
+ 
+        //cout << "Среднее арефметическое в " << i + 1 << " столбце равно: " << srA << endl;
+        printf_s("Среднее арефметическое в %d столбце равно: %F\n",i+1, srA);
+ 
+        if (srA < megamin) {
+            megamin = srA;
+            min = i;
+        }
+ 
+    }
+ 
+    //cout << endl << "Минимальный столбец: " << min + 1 << endl << endl;
+    printf_s("Минимальный столбец: %d\n\n",min+1);
+    for (int i = 0; i < n; i++) {
+        matr[min][i] = matr[min][i] - matr[i][min];
+    }
+}
+ 
+Er Memory_allocation(elemType**& matr,int& n, int& m) {
+    matr = new(nothrow) elemType * [m];
+    if (matr) {
+ 
+        for (int i = 0; i < m; i++) {
+ 
+            matr[i] = new (nothrow) elemType[n];
+ 
+            if (!matr[i]) {
+ 
+                for (int k = 0; k < i; k++)
+ 
+                    delete[] matr[k];
+ 
+                delete[] matr;
+ 
+                matr = NULL;
+                break;
+ 
+            }
+ 
+        }
+    }
+    if (!matr) {       
+        return Fail_allocate_memore;
+    }
+ 
+}
+ 
+ 
+void Delete(elemType** &matr, int& n, int& m) {
+    for (int i = 0; i < m; i++)
+ 
+        delete[] matr[i];
+ 
+    delete[] matr;
+}
+ 
+void copy(elemType** &matr ,elemType** &matr1 , int& n, int& m) {
+	for (int i = 0; i < m; i++) {
+		for (int j = 0; j < n; j++) {
+			matr1[i][j] = matr[i][j];
+		}
+	}
+ }
+ 
+ 
+//////////////////////////////////////////////////////////////////
+int main()
+{
+    setlocale(LC_ALL, "ru");
+ 
+    elemType** matr = nullptr;
+    elemType** matr1 = nullptr;//копия
+ 
+    bool a = true;
+    while (a) {
+		int SETW = 8;//для задачи расстояния между элементами
+        string path;
+        ifstream file;
+        int m = 0;
+        int n = 0;
+        int t = 0;
+        string g;
+        Er flag = OK;
+ 
+        flag = Working_With_File(file, path, m, n, t, matr);
+ 
+        switch (flag) {
+ 
+        case Stop :
+                file.close();
+                cout << "gsikshdshdsldfh";
+                a = false;
+                break;
+ 
+        case isn_open:
+                cout << endl << "Не удалось открыть файл \"" << path << "\", системный код ошибки " << errno << " " << endl;
+                perror("произошла ошбика");
+                cout << endl << endl;
+                continue;
+ 
+        case WrongElem:
+            file.clear();            
+            file.seekg(t);
+            file >> g;
+            file.close();
+            cout << "Неверное значение элемента \"" << g << " \" матрице на позиции [" << m + 1 << ";" << n + 1 << "]" << endl;
+            continue;
+ 
+        case NOrectangle:
+            file.close();
+            cout << "Матрица НЕ является прямоугольной" << endl;
+            continue;
+        
+        case NOsquare:
+            file.close();           
+            cout << "Матрица НЕ является квадратной" << endl;
+            continue;
+ 
+        case Fail_allocate_memore:
+            file.close();
+            cout << "Не удалось выделить память для матрицы" << endl;
+            continue;
+        }
+ 
+        ///////////////////////////////копия тут так как до мы не знаем размерность матрицы
+        Er flag1 = OK;
+        flag1 = Memory_allocation(matr1,m,n);
+ 
+        if (flag1 == Fail_allocate_memore) {
+            file.close();
+            cout << "Не удалось выделить память для матрицы" << endl;
+            continue;
+        }
+		printf_s("m равно: %d \nn равно: %d\n\n",m,n);
+
+        /////////////////////////////////////////
+        matrix_input(file, matr, m, n);
+        file.close();
+		printf_s("Исодная матрица:\n");
+		matrix_show(matr, m, n, SETW);
+
+		////////////////////////копирование
+		copy(matr,matr1,m,n);
+
+        //////////////////////////обработка
+        processing(matr, n, m);
+		printf_s("Новая матрица:\n");
+		matrix_show(matr, m, n, SETW);
+        Delete(matr, n, m);
+
+		//////////////////////////////копия
+		printf_s("Копия:\n");
+		matrix_show(matr1, m, n, SETW);
+		Delete(matr1, n, m);
+    }
+    return 0;
+}
