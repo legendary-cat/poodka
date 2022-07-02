@@ -1,0 +1,325 @@
+//Задание 6 Заданы массивы А1, А2, ..., А10, С1, С2, ..., С10и число Р.Сформировать массив D, содержащий АiиCi, меньшие заданного Р.
+#include "stdafx.h"
+#include "stdio.h"
+#include <iostream>
+#include <fstream>
+#include <string>
+#include <sstream>
+#include <io.h>
+#include <conio.h>
+#include <windows.h>
+#include <array>
+#include <iomanip>
+using namespace std;
+
+typedef int elemType;
+elemType* a;
+elemType n = 0;
+
+int main()
+{
+	setlocale(LC_ALL, "ru");
+
+	while (true) {
+
+		int cod;
+
+		while (true) {
+			cin.clear();
+			cin.ignore(cin.rdbuf()->in_avail());
+			//cout << "введите команду: ";
+			cout << "1.Создать файл с исходными данными \n 2. Загрузить исходные данные \n 3. Вывести исходные данные \n 4. Обработать данные \n 5. Завершить работу с программой ";
+			cin >> cod;
+			cout << endl;
+
+			if (cin.peek() == '\n')
+				if (cod >= 1 && cod <= 5) {
+					break;
+				}
+			cin.clear();
+			cin.ignore(cin.rdbuf()->in_avail());
+
+		}
+
+		////////////////////////////////////////////////////////////////////////////
+		if (cod == 1) {
+			cin.clear();
+			cin.ignore(cin.rdbuf()->in_avail());
+			while (true) {
+
+				bool flag = false;
+
+				while (true) {
+					cin.clear();
+					cin.ignore(cin.rdbuf()->in_avail());
+					cout << "введите количество элементов массива или * для завершения: ";
+					if (cin.peek() == '*' && cin.rdbuf()->in_avail() == 2) {
+						flag = true;
+						break;
+					}
+					int step;
+					cin >> step;
+					cout << endl;
+
+					if (cin.peek() == '\n') {
+						if (step <= 0) {
+							cout << "Количесво элементов должно быть больше нуля" << endl;
+
+							continue;
+						}
+						n = step;//чтобы n не менялось слишком рано
+						break;
+					}
+				}
+
+				if (flag) {
+					break;
+				}
+				if (a == nullptr) {
+					delete[] a;
+				}
+				a = new(std::nothrow) elemType[n];
+
+				if (a == nullptr) {
+					cout << "не удалось выделить память для массива " << endl;
+					continue;
+				}
+
+				cout << "Введите массив длины " << n << ": " << endl;
+
+				for (int i = 0; i < n;) {
+					cin.clear();
+					cin.ignore(cin.rdbuf()->in_avail());
+					cout << "Вевдите a[" << i/*+1*/ << "] или * для завершения ";
+					if (cin.peek() == '*' && cin.rdbuf()->in_avail() == 2) {
+						flag = true;
+						break;
+					}
+					cin >> a[i];
+					cout << endl;
+
+					if (cin.peek() == '\n') {
+						cin.clear();
+						cin.ignore(cin.rdbuf()->in_avail());
+						i++;
+					}
+					cin.clear();
+					cin.ignore(cin.rdbuf()->in_avail());
+				}
+
+				if (flag) {
+					delete[] a;
+					n = 0;
+					break;
+				}
+				////////////////////////////////////////////////////
+				while (true) {
+					cout << "Введите название файла или * чтобы не сохранить массив, но не сохранять его в файл ";
+
+					string path;
+
+					fstream file;
+
+					getline(cin >> ws, path);
+
+					if (path == "*") {
+						break;
+					}
+
+					file.open(path, ios::binary | ios::in);
+
+					char sss;
+
+					if (file.is_open()) {
+						file.close();
+						while (true) {
+							cout << "Файл с таким названием уже существует. Введите 1 для перезаписи или 2 для завершения " << endl;
+
+							sss = _getch();
+							if (sss != '1' && sss != '2') {
+								continue;
+							}
+							break;
+						}
+					}
+					if (sss == '2') {
+						break;
+					}
+
+					ofstream f;
+
+					f.open(path, ios::binary);//проверка открытия
+
+					if (!f.is_open()) {
+						f.close();
+						cout << endl << "Не удалось открыть файл \"" << path << "\", системный код ошибки " << errno << " " << endl;
+						perror("произошла ошбика");
+						cout << endl << endl;
+						continue;// отправляет в начало цикла
+					}
+
+					///////////////////////////////////////////////////////////////
+					f.write((char*)&n, sizeof(int));
+					f.write((char*)a, n * sizeof(elemType));
+
+					f.close();
+					break;
+				}
+				break;
+			}
+		}
+
+		else if (cod == 2) {
+			while (true) {
+				bool flag = false;
+				cout << "Введите название файла или * для завершения ";
+
+				string path;
+
+				fstream file;
+
+				getline(cin >> ws, path);
+
+				if (path == "*") {
+					file.close();
+					break;
+				}
+
+				file.open(path, ios::binary | ios::in);
+
+				if (!file.is_open()) {
+					cout << endl << "Не удалось открыть файл \"" << path << "\", системный код ошибки " << errno << " " << endl;
+					perror("произошла ошбика");
+					cout << endl << endl;
+					continue;
+				}
+
+				elemType step = sizeof(file.get()) ;
+				
+				file.seekg(0, ios::end);
+				int k = file.tellg();
+				
+				if (k == 0) {
+					file.close();
+					cout << "Пустой файл" << endl;
+					continue;
+				}
+
+				if ((k-sizeof(step)) % sizeof(elemType)) {
+					file.close();
+					cout << "Файл содержит не корректные данные" << endl;
+					continue;
+				}
+
+				file.seekg(0);//Устанавливает позицию следующего символа, который будет извлечен из входного потока
+
+				file.read((char*)&n, sizeof(int));
+				if (n <= 0) {
+					file.close();
+					n = 0;
+					delete[] a;
+					cout << "количество элементов массива меньше либо равно 0" << endl;
+					continue;
+				}
+
+				a = new(std::nothrow) elemType[n];
+
+				if (a == nullptr) {
+					file.close();
+					cout << "не удалось выделить память для массива " << endl;
+					n = 0;
+					delete[] a;
+					continue;
+				}
+				file.read((char*)a, n * sizeof(elemType));
+				file.close();
+
+				cout << "Номера:";
+				cout << setw(29) << " ";
+				for (int i = 1; i <= n; i++) {
+					cout << i << setw(8);
+				}
+
+				cout << endl << "элемнты конечного массива:";
+				cout << setw(3) << " ";
+				for (int i = 0; i < n; i++) {
+					cout << setw(8) << a[i];
+				}
+				cout << "\n\n";
+				break;
+			}
+		}
+
+		else if (cod == 3) {
+
+			if (a == nullptr) {
+				cout << "Пока нет загруженного массива" << endl << endl;
+				continue;
+			}
+
+			cout << "Номера:";
+			cout << setw(29) << " ";
+			for (int i = 1; i <= n; i++) {
+				cout << i << setw(8);
+			}
+
+			cout << endl << "элемнты конечного массива:";
+			cout << setw(3) << " ";
+			for (int i = 0; i < n; i++) {
+				cout << setw(8) << a[i];
+			}
+			cout << "\n\n";
+		}
+
+		else if (cod == 4) {
+			bool flag = false;
+
+			if (a == nullptr) {
+				cout << "Пока нет загруженного массива" << endl << endl;
+				continue;
+			}
+			//////////////////Ввода P
+			int P;
+
+			while (true) {
+				cout << "введите P или * для завершения: ";
+				if (cin.peek() == '*' && cin.rdbuf()->in_avail() == 2) {
+					flag = true;
+					break;
+				}
+				cin >> P;
+				cout << endl;
+
+				if (cin.peek() == '\n')
+					break;
+				cin.clear();
+				cin.ignore(cin.rdbuf()->in_avail());
+			}
+
+			if (flag) {
+				continue;
+			}
+			cout << "Номера:";
+			cout << setw(29) << " ";
+			for (int i = 1; i <= n; i++) {
+				cout << i << setw(8);
+			}
+			cout << "Конечный массив: ";
+			for (int i = 0; i < n; i++) {
+				if (a[i] < P) {
+					cout << setw(8) << a[i];
+				}
+			}
+			cout << endl << endl;
+		}
+
+		else if (cod == 5) {
+			cout << "завершение программы";
+			delete[] a;
+			break;
+			//очистка всего лишнего
+		}
+	}
+
+	return 0;
+}
