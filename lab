@@ -1,0 +1,176 @@
+//Задание:
+//8.	Создать набор данных, содержащий информацию о строительных объектах, со следующими полями: 
+//Шифр объекта 	Наимено-вание объекта  	Адрес объекта (город) 	Шифр строительной организации 
+//Дата сдачи объекта в эксплуатацию 	Проектная длительность эксплуатации объекта 
+
+//а) напечатать список объектов, сданных в эксплуатацию в указанный год в указанном городе; 
+//б) вывести сведения по строительным организациям об объектах с наименьшим сроком эксплуатации
+#include <iostream>
+#include <fstream>
+#include <string>
+using namespace std;
+
+struct firm
+{
+	string shifr_object;
+	string name;
+	string adres;
+	string shifr_firm;
+	int day;
+	int month;
+	int year;
+	int time;
+};
+
+int main()
+{
+	setlocale(LC_ALL, "ru");
+	cout << "1 - Введите данные о ново фирме\n2 - вывести данные по фирмам из массива\n3 - вывести данные по фирмам из массива и задание а) и б)\n0 - конец\n";
+	int cod = -1;
+	string path = "Firm.txt";
+	while (cod != 0) {
+		cout << "введите команду ";
+		cin >> cod;
+		if (cod == 1) {
+			int size = 1;
+			firm* arr = new firm[size];
+			ofstream fs;
+			fs.open(path, ofstream::app);
+			for (int i = 0; i < size; i++) {
+				cout << "Шифр объекта ";
+				cin >> arr[i].shifr_object;
+				cout << "Наимено-вание объекта ";
+				cin >> arr[i].name;
+				cout << "Адрес объекта (город)  ";
+				cin >> arr[i].adres;
+				cout << "Шифр строительной организации ";
+				cin >> arr[i].shifr_firm;
+				cout << "день ";
+				cin >> arr[i].day;
+				cout << "месяц ";
+				cin >> arr[i].month;
+				cout << "год ";
+				cin >> arr[i].year;
+				cout << "Проектная длительность эксплуатации объекта  ";
+				cin >> arr[i].time;
+			}
+			for (int i = 0; i < size; i++) {
+				fs << arr[i].shifr_object << " " << arr[i].name << " " << arr[i].adres << " " << arr[i].shifr_firm << " " << arr[i].day << " " << arr[i].month << " " << arr[i].year << " " << arr[i].time << "\n";
+			}
+			delete[] arr;
+			fs.close();
+		}
+		if (cod == 2) {
+			//считаем количество строчек в файле
+			ifstream fff;
+			fff.open(path);
+			string s;
+			int m = 0;
+			//EOF - операция чтения файла доходит до его конца
+			while (fff.peek() != EOF) {
+				getline(fff, s);
+				m++;
+			}
+			cout << "всего строк " << m << endl;
+			fff.close();
+
+			//считываем данные из файла
+			ifstream fin;
+			fin.open(path);
+			firm* zzz = new firm[m];
+
+			int i = 0;
+			char ch;
+			while (!fin.eof())
+			{
+				fin >> zzz[i].shifr_object;
+				fin >> zzz[i].name;
+				fin >> zzz[i].adres;
+				fin >> zzz[i].shifr_firm;
+				fin >> zzz[i].day;
+				fin >> zzz[i].month;
+				fin >> zzz[i].year;
+				fin >> zzz[i].time;
+				i++;
+			}
+			fin.close();
+			for (int i = 0; i < m; i++) {
+				cout << zzz[i].shifr_object << " " << zzz[i].name << " " << zzz[i].adres << " " << zzz[i].shifr_firm << " " << zzz[i].day << " " << zzz[i].month << " " << zzz[i].year << " " << zzz[i].time << "\n";
+			}
+		}
+		if (cod == 3) {
+			//считаем количество строчек в файле
+			ifstream fff;
+			fff.open(path);
+			string s;
+			int m = 0;
+			//EOF - операция чтения файла доходит до его конца
+			while (fff.peek() != EOF) {
+				getline(fff, s);
+				m++;
+			}
+			cout << "всего строк " << m << endl;
+			fff.close();
+
+			//считываем данные из файла
+			ifstream fin;
+			fin.open(path);
+			firm* zzz = new firm[m];
+
+			int i = 0;
+			char ch;
+			while (!fin.eof())
+			{
+				fin >> zzz[i].shifr_object;
+				fin >> zzz[i].name;
+				fin >> zzz[i].adres;
+				fin >> zzz[i].shifr_firm;
+				fin >> zzz[i].day;
+				fin >> zzz[i].month;
+				fin >> zzz[i].year;
+				fin >> zzz[i].time;
+				i++;
+			}
+			fin.close();
+			ofstream rrr;
+			rrr.open("Firm1.txt");
+			//выводим все элементы в файле на экран по структурам
+			for (int i = 0; i < m; i++) {
+				cout << zzz[i].shifr_object << " " << zzz[i].name << " " << zzz[i].adres << " " << zzz[i].shifr_firm << " " << zzz[i].day << " " << zzz[i].month << " " << zzz[i].year << " " << zzz[i].time << "\n";
+			}
+			cout << endl;
+			cout << "введите год ";
+			int x;
+			cin >> x;
+			cout << "введите город ";
+			string str;
+			cin >> str;
+			cout << "подходящие фирмы: " << endl;
+
+			int min = zzz[0].time;
+			rrr << "firms" << endl;
+			for (int i = 0; i < m; i++) {
+				if (zzz[i].year == x && zzz[i].adres == str) {
+					rrr << zzz[i].shifr_object << " " << zzz[i].name << " " << zzz[i].adres << " " << zzz[i].shifr_firm << " " << zzz[i].day << " " << zzz[i].month << " " << zzz[i].year << " " << zzz[i].time << endl;
+					cout << zzz[i].shifr_object << " " << zzz[i].name << " " << zzz[i].adres << " " << zzz[i].shifr_firm << " " << zzz[i].day << " " << zzz[i].month << " " << zzz[i].year << " " << zzz[i].time << "\n";
+				}
+				if (zzz[i].time < min) {
+					min = zzz[i].time;
+				}
+			}
+			// задание б
+			cout << "наименьший срок эксплуатации" << endl;
+			rrr << "the shortest service life " << endl;
+			for (int i = 0; i < m; i++) {
+				if (zzz[i].time == min) {
+					rrr << zzz[i].shifr_object << " " << zzz[i].name << " " << zzz[i].adres << " " << zzz[i].shifr_firm << " " << zzz[i].day << " " << zzz[i].month << " " << zzz[i].year << " " << zzz[i].time << endl;
+					cout << zzz[i].shifr_object << " " << zzz[i].name << " " << zzz[i].adres << " " << zzz[i].shifr_firm << " " << zzz[i].day << " " << zzz[i].month << " " << zzz[i].year << " " << zzz[i].time << "\n";
+				}
+			}
+
+			rrr.close();
+			delete[] zzz;
+		}
+	}
+	return 0;
+}
